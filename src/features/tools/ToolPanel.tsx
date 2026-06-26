@@ -1,12 +1,4 @@
-import {
-  BarChart3,
-  Bot,
-  FileJson,
-  Gauge,
-  ListChecks,
-  Settings2,
-  TerminalSquare,
-} from "lucide-react";
+import { Bot, FileJson, Gauge, ListChecks, Settings2, TerminalSquare } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Badge } from "../../components/ui/badge";
@@ -22,7 +14,6 @@ import { summarizeTerminalLines } from "../terminal/terminalFilters";
 const tools = [
   { name: "串口配置", icon: Settings2, state: "阶段 2" },
   { name: "命令列表", icon: ListChecks, state: "阶段 5" },
-  { name: "实时曲线", icon: BarChart3, state: "阶段 7" },
   { name: "虚拟设备", icon: Bot, state: "阶段 4" },
   { name: "自动化测试", icon: TerminalSquare, state: "阶段 8" },
 ];
@@ -55,7 +46,9 @@ export function ToolPanel() {
     <Panel className="module-resizable-x flex min-w-[320px] flex-col overflow-hidden">
       <div className="border-b border-border px-4 py-3">
         <h2 className="text-sm font-semibold">工具面板</h2>
-        <p className="text-xs text-muted-foreground">阶段 3 已启用会话统计，未完成项继续标记</p>
+        <p className="text-xs text-muted-foreground">
+          阶段 3/6 已启用统计与协议解析，未完成项继续标记
+        </p>
       </div>
       <div className="min-h-0 flex-1 space-y-2 overflow-auto p-3">
         <section className="rounded-xl border border-border bg-background/70 p-3">

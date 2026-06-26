@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Button } from "../components/ui/button";
 import { Panel } from "../components/ui/panel";
 import { BackendPingCard } from "../features/backend/BackendPingCard";
+import { RealtimeChartPanel } from "../features/charts/RealtimeChartPanel";
 import { ConnectionSidebar } from "../features/connections/ConnectionSidebar";
 import { SenderPanel } from "../features/sender/SenderPanel";
 import { StatusBar } from "../features/status/StatusBar";
@@ -60,8 +61,9 @@ export function AppShell() {
         <ConnectionSidebar />
         <Panel className="flex min-w-[520px] flex-col overflow-hidden">
           <WorkspaceTabs />
-          <section className="grid min-h-0 flex-1 grid-rows-[minmax(260px,1fr)_220px] gap-3 p-3">
+          <section className="grid min-h-0 flex-1 grid-rows-[minmax(220px,1fr)_190px_220px] gap-3 p-3">
             <TerminalView />
+            <RealtimeChartPanel />
             <div className="grid grid-cols-[1fr_280px] gap-3">
               <SenderPanel />
               <BackendPingCard />
