@@ -10,12 +10,20 @@ import { SenderPanel } from "../features/sender/SenderPanel";
 import { StatusBar } from "../features/status/StatusBar";
 import { TerminalView } from "../features/terminal/TerminalView";
 import { ToolPanel } from "../features/tools/ToolPanel";
+import { VirtualPortPanel } from "../features/virtual/VirtualPortPanel";
+import { DockableModule } from "../features/workspace/DockableModule";
+import { FloatingWindowLayer } from "../features/workspace/FloatingWindowLayer";
+import { WindowMenu } from "../features/workspace/WindowMenu";
 import { WorkspaceTabs } from "../features/workspace/WorkspaceTabs";
 import { useSerialEvents } from "../hooks/useSerialEvents";
 import { useThemeStore } from "../stores/themeStore";
+import { useWorkspaceStore, type WorkspacePanelId } from "../stores/workspaceStore";
 
 export function AppShell() {
   const { theme, toggleTheme, hydrateTheme } = useThemeStore();
+  const panels = useWorkspaceStore((state) => state.panels);
+  const showBottomDock =
+    isDockedPanelVisible(panels.sender) || isDockedPanelVisible(panels.backend);
   useSerialEvents();
 
   useEffect(() => {
@@ -31,11 +39,12 @@ export function AppShell() {
           </div>
           <div>
             <h1 className="text-base font-semibold leading-tight">SerialForge</h1>
-            <p className="text-xs text-muted-foreground">默认工作区 · 阶段 1 骨架</p>
+            <p className="text-xs text-muted-foreground">默认工作区 · 阶段 9 窗口管理</p>
           </div>
         </div>
 
         <nav className="flex items-center gap-2">
+          <WindowMenu />
           <Button size="sm">
             <Plus className="h-4 w-4" />
             新建连接
@@ -57,23 +66,104 @@ export function AppShell() {
         </nav>
       </header>
 
-      <main className="grid min-h-0 flex-1 grid-cols-[280px_minmax(520px,1fr)_340px] gap-3 p-3">
-        <ConnectionSidebar />
+      <main
+        className="grid min-h-0 flex-1 gap-3 p-3"
+        style={{ gridTemplateColumns: buildMainColumns(panels) }}
+      >
+        <DockableModule panelId="connections">
+          <ConnectionSidebar />
+        </DockableModule>
         <Panel className="flex min-w-[520px] flex-col overflow-hidden">
           <WorkspaceTabs />
-          <section className="grid min-h-0 flex-1 grid-rows-[minmax(220px,1fr)_190px_220px] gap-3 p-3">
-            <TerminalView />
-            <RealtimeChartPanel />
-            <div className="grid grid-cols-[1fr_280px] gap-3">
-              <SenderPanel />
-              <BackendPingCard />
-            </div>
+          <section className="flex min-h-0 flex-1 flex-col gap-2 p-3">
+            <DockableModule panelId="terminal" className="flex-[1_1_auto]">
+              <TerminalView />
+            </DockableModule>
+            <DockableModule panelId="chart" className="min-h-[150px] flex-[0_0_170px]">
+              <RealtimeChartPanel />
+            </DockableModule>
+            {showBottomDock && (
+              <div
+                className="grid min-h-[180px] flex-[0_0_205px] gap-2"
+                style={{ gridTemplateColumns: buildBottomColumns(panels) }}
+              >
+                <DockableModule panelId="sender">
+                  <SenderPanel />
+                </DockableModule>
+                <DockableModule panelId="backend">
+                  <BackendPingCard />
+                </DockableModule>
+              </div>
+            )}
           </section>
         </Panel>
-        <ToolPanel />
+        {showSideDock(panels) && (
+          <aside className="flex min-h-0 flex-col gap-2 overflow-hidden">
+            <DockableModule panelId="virtual">
+              <VirtualPortPanel />
+            </DockableModule>
+            <DockableModule panelId="tools">
+              <ToolPanel />
+            </DockableModule>
+          </aside>
+        )}
       </main>
 
+      <FloatingWindowLayer renderPanel={renderWorkspacePanel} />
       <StatusBar />
     </div>
   );
+}
+
+function buildMainColumns(panels: ReturnType<typeof useWorkspaceStore.getState>["panels"]): string {
+  const columns = [];
+
+  if (panels.connections.visible && !panels.connections.detached) {
+    columns.push("250px");
+  }
+
+  columns.push("minmax(620px,1fr)");
+
+  if (showSideDock(panels)) {
+    columns.push("320px");
+  }
+
+  return columns.join(" ");
+}
+
+function showSideDock(panels: ReturnType<typeof useWorkspaceStore.getState>["panels"]): boolean {
+  return isDockedPanelVisible(panels.virtual) || isDockedPanelVisible(panels.tools);
+}
+
+function buildBottomColumns(
+  panels: ReturnType<typeof useWorkspaceStore.getState>["panels"],
+): string {
+  if (isDockedPanelVisible(panels.sender) && isDockedPanelVisible(panels.backend)) {
+    return "minmax(0,1fr) 260px";
+  }
+
+  return "minmax(0,1fr)";
+}
+
+function isDockedPanelVisible(panel: { visible: boolean; detached: boolean }): boolean {
+  return panel.visible && !panel.detached;
+}
+
+function renderWorkspacePanel(panelId: WorkspacePanelId) {
+  switch (panelId) {
+    case "connections":
+      return <ConnectionSidebar />;
+    case "terminal":
+      return <TerminalView />;
+    case "sender":
+      return <SenderPanel />;
+    case "chart":
+      return <RealtimeChartPanel />;
+    case "virtual":
+      return <VirtualPortPanel />;
+    case "tools":
+      return <ToolPanel />;
+    case "backend":
+      return <BackendPingCard />;
+  }
 }

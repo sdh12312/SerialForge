@@ -17,4 +17,20 @@ describe("工作区状态", () => {
     expect(useWorkspaceStore.getState().tabs).toHaveLength(2);
     expect(useWorkspaceStore.getState().activeTabId).toBe("a");
   });
+
+  it("切换模块显示和拆分状态", () => {
+    useWorkspaceStore.getState().resetPanels();
+
+    useWorkspaceStore.getState().togglePanelVisible("chart");
+    expect(useWorkspaceStore.getState().panels.chart.visible).toBe(true);
+
+    useWorkspaceStore.getState().detachPanel("chart");
+    expect(useWorkspaceStore.getState().panels.chart.detached).toBe(true);
+
+    useWorkspaceStore.getState().dockPanel("chart");
+    expect(useWorkspaceStore.getState().panels.chart.detached).toBe(false);
+
+    useWorkspaceStore.getState().hidePanel("chart");
+    expect(useWorkspaceStore.getState().panels.chart.visible).toBe(false);
+  });
 });

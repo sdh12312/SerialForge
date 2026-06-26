@@ -44,7 +44,7 @@ export function ToolPanel() {
   }, [fieldConfig, protocolHex]);
 
   return (
-    <Panel className="module-resizable-x flex min-w-[320px] flex-col overflow-hidden">
+    <Panel className="module-resizable-x flex min-w-[300px] flex-col overflow-hidden">
       <div className="border-b border-border px-4 py-3">
         <h2 className="text-sm font-semibold">工具面板</h2>
         <p className="text-xs text-muted-foreground">
