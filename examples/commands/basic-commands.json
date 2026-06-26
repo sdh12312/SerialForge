@@ -1,0 +1,29 @@
+{
+  "name": "基础命令列表示例",
+  "commands": [
+    {
+      "name": "读取设备 ID",
+      "data": "AA 55 01 00",
+      "mode": "hex",
+      "lineEnding": "none",
+      "enabled": true,
+      "loop": false,
+      "intervalMs": 1000,
+      "hotkey": "",
+      "group": "设备",
+      "note": "阶段 5 将接入真实发送"
+    },
+    {
+      "name": "时间戳文本",
+      "data": "PING \${timestamp} #\${counter}",
+      "mode": "text",
+      "lineEnding": "crlf",
+      "enabled": true,
+      "loop": false,
+      "intervalMs": 1000,
+      "hotkey": "",
+      "group": "调试",
+      "note": "变量替换示例"
+    }
+  ]
+}

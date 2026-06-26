@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --background: 210 24% 96%;
+  --foreground: 222 47% 11%;
+  --panel: 0 0% 100%;
+  --panel-foreground: 222 47% 11%;
+  --muted: 214 32% 91%;
+  --muted-foreground: 215 16% 47%;
+  --border: 214 32% 86%;
+  --primary: 210 100% 45%;
+  --primary-foreground: 0 0% 100%;
+  --success: 152 69% 31%;
+  --warning: 38 92% 45%;
+  --danger: 0 72% 51%;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: 222 47% 7%;
+  --foreground: 210 40% 96%;
+  --panel: 222 40% 11%;
+  --panel-foreground: 210 40% 96%;
+  --muted: 222 31% 16%;
+  --muted-foreground: 215 20% 68%;
+  --border: 222 28% 22%;
+  --primary: 204 100% 58%;
+  --primary-foreground: 222 47% 7%;
+  --success: 150 64% 45%;
+  --warning: 38 92% 55%;
+  --danger: 0 78% 63%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 1120px;
+  min-height: 720px;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: Inter, "Microsoft YaHei UI", "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: hsl(var(--primary) / 0.28);
+}
+
+.module-resizable {
+  resize: both;
+  overflow: auto;
+  min-width: 220px;
+  min-height: 120px;
+}
+
+.module-resizable-x {
+  resize: horizontal;
+  overflow: auto;
+}

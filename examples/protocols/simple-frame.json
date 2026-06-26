@@ -1,0 +1,23 @@
+{
+  "name": "Simple AA55 Frame",
+  "header": "AA 55",
+  "tail": "",
+  "lengthMode": "fixed",
+  "fixedLength": 5,
+  "byteOrder": "big_endian",
+  "checksum": "crc16_modbus",
+  "fields": [
+    {
+      "name": "command",
+      "type": "uint8",
+      "offset": 2,
+      "length": 1
+    },
+    {
+      "name": "status",
+      "type": "uint8",
+      "offset": 3,
+      "length": 1
+    }
+  ]
+}

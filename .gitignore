@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-ssr
+release
+coverage
+*.local
+src-tauri/target
+src-tauri/target-gnu
+src-tauri/gen
+*.log
+*.tsbuildinfo
+.DS_Store
+Thumbs.db

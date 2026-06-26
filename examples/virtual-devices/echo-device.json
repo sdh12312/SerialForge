@@ -1,0 +1,20 @@
+{
+  "name": "Echo Demo Device",
+  "initialState": "idle",
+  "periodicReports": [],
+  "rules": [
+    {
+      "id": "read-id",
+      "name": "读取设备 ID",
+      "enabled": true,
+      "match_mode": "exact",
+      "request_data": "AA 55 01 00",
+      "request_format": "hex",
+      "response_data": "AA 55 81 00 7F",
+      "response_format": "hex",
+      "response_delay_ms": 20,
+      "append_line_ending": false,
+      "repeat_count": 1
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+[package]
+name = "serialforge"
+version = "0.1.0"
+description = "SerialForge desktop serial debugging workbench"
+authors = ["SerialForge Contributors"]
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "serialforge_lib"
+crate-type = ["rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serialport = "4"
+tauri = { version = "2", features = [] }
+thiserror = "2"
+tracing = "0.1"

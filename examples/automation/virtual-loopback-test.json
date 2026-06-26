@@ -1,0 +1,14 @@
+{
+  "name": "虚拟回环冒烟测试",
+  "steps": [
+    {
+      "kind": "send_hex",
+      "data": "AA 55 01 00"
+    },
+    {
+      "kind": "wait_hex",
+      "data": "AA 55 01 00",
+      "timeoutMs": 1000
+    }
+  ]
+}
