@@ -26,7 +26,7 @@ export type TerminalLine = {
   byteLength?: number;
 };
 
-type SendMode = "text" | "hex";
+export type SendMode = "text" | "hex";
 type DisplayMode = "text" | "hex" | "mixed";
 export type DirectionFilter = "all" | "rx" | "tx" | "system";
 export type LineEnding = "none" | "cr" | "lf" | "crlf";
@@ -62,6 +62,15 @@ type SerialState = {
   closeConnection: (connectionId: string) => Promise<void>;
   closeActiveConnection: () => Promise<void>;
   send: (payload: string) => Promise<void>;
+  sendToConnection: (
+    connectionId: string,
+    payload: string,
+    options?: {
+      mode?: SendMode;
+      lineEnding?: LineEnding;
+      addToHistory?: boolean;
+    },
+  ) => Promise<boolean>;
   appendRx: (event: SerialDataEvent) => void;
   applyStatus: (event: SerialStatusEvent) => void;
   setActiveConnection: (connectionId: string) => void;
@@ -263,42 +272,57 @@ export const useSerialStore = create<SerialState>((set, get) => ({
       return;
     }
 
+    await get().sendToConnection(activeConnectionId, payload, {
+      mode: sendMode,
+      lineEnding,
+      addToHistory: true,
+    });
+  },
+  sendToConnection: async (connectionId, payload, options) => {
+    if (payload.length === 0) {
+      return false;
+    }
+
     try {
-      const payloadToSend = sendMode === "text" ? payload + resolveLineEnding(lineEnding) : payload;
-      if (isVirtualConnection(activeConnectionId)) {
+      const mode = options?.mode ?? get().sendMode;
+      const lineEnding = options?.lineEnding ?? get().lineEnding;
+      const addToHistory = options?.addToHistory ?? true;
+      const payloadToSend = mode === "text" ? payload + resolveLineEnding(lineEnding) : payload;
+      if (isVirtualConnection(connectionId)) {
         const data =
-          sendMode === "hex"
+          mode === "hex"
             ? [...parseHexInput(payloadToSend)]
             : [...new TextEncoder().encode(payloadToSend)];
-        transmitVirtualData(get, set, activeConnectionId, payload, data);
-        return;
+        transmitVirtualData(get, set, connectionId, payload, data, addToHistory);
+        return true;
       }
 
       const result =
-        sendMode === "hex"
-          ? await sendSerialHex(activeConnectionId, payloadToSend)
-          : await sendSerialText(activeConnectionId, payloadToSend);
+        mode === "hex"
+          ? await sendSerialHex(connectionId, payloadToSend)
+          : await sendSerialText(connectionId, payloadToSend);
       set((state) => ({
         connections: state.connections.map((connection) =>
-          connection.id === activeConnectionId
+          connection.id === connectionId
             ? { ...connection, txBytes: connection.txBytes + result.bytesWritten }
             : connection,
         ),
-        sendHistory: [payload, ...state.sendHistory.filter((item) => item !== payload)].slice(
-          0,
-          20,
-        ),
+        sendHistory: addToHistory
+          ? [payload, ...state.sendHistory.filter((item) => item !== payload)].slice(0, 20)
+          : state.sendHistory,
         terminalLines: appendLine(state.terminalLines, {
           id: crypto.randomUUID(),
-          connectionId: activeConnectionId,
+          connectionId,
           direction: "tx",
           content: payload + " (" + result.bytesWritten + " B)",
           timestamp: new Date().toISOString(),
           byteLength: result.bytesWritten,
         }),
       }));
+      return true;
     } catch (error) {
       set({ error: getSerialErrorMessage(error) });
+      return false;
     }
   },
   appendRx: (event) =>
@@ -445,6 +469,7 @@ function transmitVirtualData(
   sourceConnectionId: string,
   payload: string,
   data: number[],
+  addToHistory = true,
 ) {
   const peerConnectionId = getVirtualPeer(sourceConnectionId);
   if (!peerConnectionId) {
@@ -467,7 +492,9 @@ function transmitVirtualData(
         ? { ...connection, txBytes: connection.txBytes + data.length }
         : connection,
     ),
-    sendHistory: [payload, ...state.sendHistory.filter((item) => item !== payload)].slice(0, 20),
+    sendHistory: addToHistory
+      ? [payload, ...state.sendHistory.filter((item) => item !== payload)].slice(0, 20)
+      : state.sendHistory,
     terminalLines: appendLine(state.terminalLines, sourceLine),
   }));
 

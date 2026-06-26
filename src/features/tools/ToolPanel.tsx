@@ -1,9 +1,11 @@
-import { Bot, FileJson, Gauge, ListChecks, Settings2, TerminalSquare } from "lucide-react";
+import { Bot, FileJson, Gauge, ListChecks, Settings2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Badge } from "../../components/ui/badge";
 import { Panel } from "../../components/ui/panel";
 import { useSerialStore } from "../../stores/serialStore";
+import { AutomationPanel } from "../automation/AutomationPanel";
+import { BridgePanel } from "../automation/BridgePanel";
 import {
   calculateChecksums,
   parseProtocolFrame,
@@ -15,7 +17,6 @@ const tools = [
   { name: "串口配置", icon: Settings2, state: "阶段 2" },
   { name: "命令列表", icon: ListChecks, state: "阶段 5" },
   { name: "虚拟设备", icon: Bot, state: "阶段 4" },
-  { name: "自动化测试", icon: TerminalSquare, state: "阶段 8" },
 ];
 
 export function ToolPanel() {
@@ -123,6 +124,9 @@ export function ToolPanel() {
             </div>
           )}
         </section>
+
+        <AutomationPanel />
+        <BridgePanel />
 
         {tools.map((tool) => (
           <button
